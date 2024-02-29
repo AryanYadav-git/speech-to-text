@@ -1,15 +1,16 @@
+const copyMsg = document.querySelector("[data-Msg]");
+const inputBox = document.getElementById("input");
 function startVoiceRecognition(){
-    var loading = document.getElementById("loading");
-    loading.style.display = "block";
+    copyMsg.innerText="Listening";
+    copyMsg.classList.add("active");
     if('webkitSpeechRecognition' in window){
         var recognition = new webkitSpeechRecognition();
-        recognition.lang = 'en-IN';
+        recognition.lang = 'en-in';
         recognition.continuous = true;
         // recognition.interimResults = true;
         recognition.start();
-
         recognition.onresult = function(event){
-            var inputBox = document.getElementById("input");
+            
             var transcript = event.results[0][0].transcript;
             console.log(event);
             inputBox.value = "";
@@ -23,17 +24,40 @@ function startVoiceRecognition(){
                 }
             }, 50);
             recognition.stop();
-            loading.style.display = "none";
+            copyMsg.classList.remove("active");
         }
 
         recognition.onerror = function(event){
             console.log('Error: ' + event.error);
-            loading.style.display = "none";
+            copyMsg.classList.remove("active");
         }
 
-        alert("Mic is on");
+        // alert("Mic is on");
 
     } else {
         alert("Doesn't support");
     }
+}
+
+async function copyContent(){
+    try{
+       await navigator.clipboard.writeText(inputBox.value);
+       copyMsg.innerText="copied";
+    }
+    catch(e){
+        copyMsg.innerText="Failed";
+        console.log(e);
+    }
+    copyMsg.classList.add("active");
+    setTimeout( () => {
+        copyMsg.classList.remove("active");
+    },1000);
+}
+
+function clearBox(){
+    inputBox.value = "";
+}
+
+function stopRecording(){
+
 }
